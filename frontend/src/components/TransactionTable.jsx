@@ -1,0 +1,106 @@
+import { ArrowUpDown, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+
+export default function TransactionTable({ records }) {
+  const HeaderCell = ({ label }) => (
+    <th className="px-6 py-4 border-b border-gray-200 bg-gray-50 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider group cursor-pointer hover:bg-gray-100 transition-colors">
+      <div className="flex items-center gap-2">
+        {label}
+        <ArrowUpDown className="w-3 h-3 text-gray-400 group-hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+      </div>
+    </th>
+  );
+
+  return (
+    <div className="flex flex-col h-full bg-white text-gray-800">
+      <div className="flex-1 overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 text-sm">
+          <thead>
+            <tr>
+              <HeaderCell label="Date" />
+              <HeaderCell label="Type" />
+              <HeaderCell label="Category" />
+              <HeaderCell label="Vendor" />
+              <HeaderCell label="Amount (PKR)" />
+              <HeaderCell label="Status" />
+              <th className="px-6 py-4 border-b border-gray-200 bg-gray-50"></th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-100">
+            {records.map((record, i) => (
+              <tr key={i} className="hover:bg-gray-50/50 transition-colors group">
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium font-sans">
+                  {record.Date}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+                    record.Transaction_Type === 'Income' 
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                      : 'bg-rose-50 text-rose-700 border-rose-200'
+                  }`}>
+                    {record.Transaction_Type}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="font-medium text-gray-900">{record.Category}</div>
+                  <div className="text-xs text-gray-500 truncate max-w-[150px]">{record.Item_Description}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                  {record.Vendor_Supplier}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`font-mono font-medium ${record.Transaction_Type === 'Income' ? 'text-emerald-600' : 'text-gray-900'}`}>
+                    {record.Transaction_Type === 'Income' ? '+' : ''}{Number(record.Total_Amount).toLocaleString()}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                    record.Payment_Status === 'Paid' 
+                      ? 'bg-gray-100 text-gray-700' 
+                      : 'bg-amber-50 text-amber-700 border-amber-200 border'
+                  }`}>
+                    {record.Payment_Status === 'Paid' ? (
+                      <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                    ) : (
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                    )}
+                    {record.Payment_Status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button className="text-gray-400 hover:text-indigo-600 transition-colors opacity-0 group-hover:opacity-100">
+                    <MoreHorizontal className="w-5 h-5" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Footer */}
+      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white min-h-[64px]">
+        <div className="text-sm text-gray-500">
+          Showing <span className="font-medium text-gray-900">1</span> to <span className="font-medium text-gray-900">6</span> of <span className="font-medium text-gray-900">42</span> entries
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="p-1 border border-gray-200 rounded text-gray-400 hover:bg-gray-50 disabled:opacity-50">
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button className="px-3 py-1 text-sm font-medium border border-indigo-600 bg-indigo-50 text-indigo-700 rounded">
+            1
+          </button>
+          <button className="px-3 py-1 text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 rounded">
+            2
+          </button>
+          <button className="px-3 py-1 text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 rounded">
+            3
+          </button>
+          <span className="px-2 text-gray-400">...</span>
+          <button className="p-1 border border-gray-200 rounded text-gray-600 hover:bg-gray-50">
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

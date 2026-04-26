@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-slate-800 antialiased;
+    font-family: var(--font-sans);
+  }
+
+  button, 
+  a,
+  input[type="button"],
+  input[type="submit"],
+  input[type="checkbox"],
+  input[type="radio"],
+  select,
+  label,
+  [role="button"] {
+    cursor: pointer !important;
+  }
+}
