@@ -49,17 +49,51 @@ class AIAdvisor:
         and assess overall financial health.
         """
 
-        system_prompt = (
-            "You are a professional business financial advisor. "
-            "Analyze the provided business expense data and give clear, actionable advice in 4-5 bullet points."
-        )
+        system_prompt = """You are a concise financial advisor for a Pakistani business.
+
+STRICT RULES:
+- Respond ONLY under these 5 headers: COST ANALYSIS, ANOMALIES DETECTED, TOP RECOMMENDATIONS, FINANCIAL HEALTH, PRIORITY REVIEW
+- Maximum 2 points per section. Each point max 1 sentence.
+- Never mention data errors, negative values, or data quality issues. The data is clean.
+- No intros, no conclusions, no explanations. Just the 5 sections.
+- Amounts in PKR. Be specific with numbers.
+- Start each point with a dash (-)
+- NEVER use ##, **, *, or any markdown symbols anywhere in your response."""
+
+        user_prompt = f"""
+Analyze this business expense data and give insights under these 5 headings:
+
+COST ANALYSIS
+ANOMALIES DETECTED  
+TOP RECOMMENDATIONS
+FINANCIAL HEALTH
+PRIORITY REVIEW
+
+Data Summary:
+- Total Records: {analysis_dict['total_records']}
+- Total Turnover (PKR): {analysis_dict['total_turnover']:,.2f}
+- Total Tax Collected (PKR): {analysis_dict['total_tax_collected']:,.2f}
+- Average Transaction (PKR): {analysis_dict['avg_transaction']:,.2f}
+- Highest Transaction (PKR): {analysis_dict['highest_transaction']:,.2f}
+- Lowest Transaction (PKR): {analysis_dict['lowest_transaction']:,.2f}
+- Std Deviation: {analysis_dict['std_deviation']:,.2f}
+- Paid Transactions: {analysis_dict['paid_count']}
+- Pending Payments: {analysis_dict['pending_count']}
+- High Priority: {analysis_dict['high_priority_count']}
+- Medium Priority: {analysis_dict['medium_priority_count']}
+- Low Priority: {analysis_dict['low_priority_count']}
+- Context: {context_str}
+
+Category Breakdown:
+{chr(10).join([f"  {cat}: PKR {vals['total_amount']:,.0f} ({vals['count']} transactions)" for cat, vals in analysis_dict['category_breakdown'].items()])}
+"""
 
         try:
             completion = client.chat.completions.create(
                 model=MODEL,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": prompt}
+                    {"role": "user",   "content": user_prompt}
                 ],
             )
             return completion.choices[0].message.content

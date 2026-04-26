@@ -16,9 +16,9 @@ class BusinessLogic:
         self.df = pd.read_csv(self.path)
 
     def add_transaction(self, data_dict):
-        # Validate 8 main fields
+        # Validate 7 main fields (Transaction_ID is auto-generated if missing)
         required_fields = [
-            'Transaction_ID', 'Date', 'Transaction_Type', 'Category', 
+            'Date', 'Transaction_Type', 'Category',
             'Item_Description', 'Amount_Raw', 'Vendor_Supplier', 'Payment_Method'
         ]
         for field in required_fields:
@@ -46,7 +46,10 @@ class BusinessLogic:
         # Generate Transaction_ID if not provided
         txn_id = data_dict.get('Transaction_ID')
         if not txn_id:
-            txn_id = f"TXN{int(pd.Timestamp.now().timestamp())}"
+            # Simply get max numeric ID and add 1
+            existing_ids = pd.to_numeric(self.df['Transaction_ID'], errors='coerce').dropna()
+            next_id = int(existing_ids.max()) + 1 if not existing_ids.empty else 1
+            txn_id = next_id
 
         new_row = {
             'Transaction_ID': txn_id,

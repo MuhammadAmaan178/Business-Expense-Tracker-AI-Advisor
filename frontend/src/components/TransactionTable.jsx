@@ -1,6 +1,15 @@
-import { ArrowUpDown, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowUpDown, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
-export default function TransactionTable({ records }) {
+const PER_PAGE = 15;
+
+export default function TransactionTable({ records, loading }) {
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.ceil(records.length / PER_PAGE);
+  const start = (page - 1) * PER_PAGE;
+  const pageRecords = records.slice(start, start + PER_PAGE);
+
   const HeaderCell = ({ label }) => (
     <th className="px-6 py-4 border-b border-gray-200 bg-gray-50 text-left text-[11px] font-bold text-gray-500 uppercase tracking-wider group cursor-pointer hover:bg-gray-100 transition-colors">
       <div className="flex items-center gap-2">
@@ -10,9 +19,26 @@ export default function TransactionTable({ records }) {
     </th>
   );
 
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-24 text-gray-400">
+        <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <span className="text-sm">Loading records...</span>
+      </div>
+    );
+  }
+
+  if (!records.length) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-24 text-gray-400">
+        <span className="text-sm">No records found.</span>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-white text-gray-800">
-      <div className="flex-1 overflow-x-auto">
+      <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
         <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead>
             <tr>
@@ -21,20 +47,22 @@ export default function TransactionTable({ records }) {
               <HeaderCell label="Category" />
               <HeaderCell label="Vendor" />
               <HeaderCell label="Amount (PKR)" />
+              <HeaderCell label="Priority" />
               <HeaderCell label="Status" />
-              <th className="px-6 py-4 border-b border-gray-200 bg-gray-50"></th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-100">
-            {records.map((record, i) => (
-              <tr key={i} className="hover:bg-gray-50/50 transition-colors group">
+            {pageRecords.map((record, i) => (
+              <tr key={i} className="hover:bg-gray-50/50 transition-colors group" style={{ height: '44px' }}>
                 <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium font-sans">
                   {record.Date}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
-                    record.Transaction_Type === 'Income' 
-                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                    record.Transaction_Type === 'Income'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : record.Transaction_Type === 'Refund'
+                      ? 'bg-blue-50 text-blue-700 border-blue-200'
                       : 'bg-rose-50 text-rose-700 border-rose-200'
                   }`}>
                     {record.Transaction_Type}
@@ -48,14 +76,27 @@ export default function TransactionTable({ records }) {
                   {record.Vendor_Supplier}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`font-mono font-medium ${record.Transaction_Type === 'Income' ? 'text-emerald-600' : 'text-gray-900'}`}>
-                    {record.Transaction_Type === 'Income' ? '+' : ''}{Number(record.Total_Amount).toLocaleString()}
+                  <div className={`font-mono font-semibold ${record.Transaction_Type === 'Income' ? 'text-emerald-600' : 'text-gray-900'}`}>
+                    {record.Transaction_Type === 'Income' ? '+' : ''}
+                    Rs {Number(record.Total_Amount).toLocaleString()}
+                  </div>
+                  <div className="text-[10px] text-gray-400">Tax: Rs {Number(record.Tax_Amount).toLocaleString()}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    record.Priority_Level === 'High'
+                      ? 'bg-red-50 text-red-600 border border-red-200'
+                      : record.Priority_Level === 'Medium'
+                      ? 'bg-yellow-50 text-yellow-700 border border-yellow-200'
+                      : 'bg-gray-100 text-gray-600 border border-gray-200'
+                  }`}>
+                    {record.Priority_Level}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                    record.Payment_Status === 'Paid' 
-                      ? 'bg-gray-100 text-gray-700' 
+                    record.Payment_Status === 'Paid'
+                      ? 'bg-gray-100 text-gray-700'
                       : 'bg-amber-50 text-amber-700 border-amber-200 border'
                   }`}>
                     {record.Payment_Status === 'Paid' ? (
@@ -66,37 +107,49 @@ export default function TransactionTable({ records }) {
                     {record.Payment_Status}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-gray-400 hover:text-indigo-600 transition-colors opacity-0 group-hover:opacity-100">
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination Footer */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white min-h-[64px]">
+      {/* Pagination Footer — pinned at bottom */}
+      <div
+        className="flex items-center justify-between px-6 border-t border-gray-200 bg-white"
+        style={{ flexShrink: 0, padding: '8px 16px' }}
+      >
         <div className="text-sm text-gray-500">
-          Showing <span className="font-medium text-gray-900">1</span> to <span className="font-medium text-gray-900">6</span> of <span className="font-medium text-gray-900">42</span> entries
+          Showing <span className="font-medium text-gray-900">{start + 1}</span> to{' '}
+          <span className="font-medium text-gray-900">{Math.min(start + PER_PAGE, records.length)}</span> of{' '}
+          <span className="font-medium text-gray-900">{records.length}</span> entries
         </div>
         <div className="flex items-center gap-2">
-          <button className="p-1 border border-gray-200 rounded text-gray-400 hover:bg-gray-50 disabled:opacity-50">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="p-1 border border-gray-200 rounded text-gray-400 hover:bg-gray-50 disabled:opacity-40"
+          >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <button className="px-3 py-1 text-sm font-medium border border-indigo-600 bg-indigo-50 text-indigo-700 rounded">
-            1
-          </button>
-          <button className="px-3 py-1 text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 rounded">
-            2
-          </button>
-          <button className="px-3 py-1 text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 rounded">
-            3
-          </button>
-          <span className="px-2 text-gray-400">...</span>
-          <button className="p-1 border border-gray-200 rounded text-gray-600 hover:bg-gray-50">
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map(p => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              className={`px-3 py-1 text-sm font-medium rounded border ${
+                page === p
+                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                  : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+          {totalPages > 5 && <span className="px-2 text-gray-400">...</span>}
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="p-1 border border-gray-200 rounded text-gray-600 hover:bg-gray-50 disabled:opacity-40"
+          >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>

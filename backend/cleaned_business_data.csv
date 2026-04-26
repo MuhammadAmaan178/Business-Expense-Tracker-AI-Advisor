@@ -4936,6 +4936,3 @@ Transaction_ID,Date,Transaction_Type,Category,Item_Description,Amount_Raw,Tax_Am
 14752,2025-09-12,Income,Refunds,Return payment,35682.53,6422.8554,42105.3854,Cash,Paid,Retail Client,Low
 14776,2025-01-07,Income,Interest,Profit on savings,37436.78,6738.6204,44175.4004,Check,Pending,Consulting Fee,Low
 14824,2025-01-30,Expense,Marketing,Billboard rent,15603.18,2808.5724,18411.7524,Check,Paid,Ali Traders,Low
-TXN_TEST_001,2024-07-15,Expense,Marketing,Social Media Ad Campaign Q3,15000.0,2700.0,17700.0,Credit Card,Pending,Meta Ads,Medium
-TXN_TEST_001,2024-07-15,Expense,Marketing,Social Media Ad Campaign Q3,15000.0,2700.0,17700.0,Credit Card,Pending,Meta Ads,Medium
-TXN_TEST_001,2024-07-15,Expense,Marketing,Social Media Ad Campaign Q3,15000.0,2700.0,17700.0,Credit Card,Paid,Meta Ads,Medium

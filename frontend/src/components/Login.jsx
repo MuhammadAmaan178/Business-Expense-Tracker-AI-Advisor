@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BookMarked, CheckCircle2, Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react';
 
 export default function Login({ onLogin }) {
-  const [email, setEmail] = useState('user@invalid');
+  const [email, setEmail] = useState('admin@domain.com');
   const [password, setPassword] = useState('password123');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -51,7 +51,7 @@ export default function Login({ onLogin }) {
             <div className="bg-[#10b981] p-1.5 rounded text-white shadow-sm">
               <BookMarked size={18} className="stroke-[2.5]" />
             </div>
-            <span className="text-lg font-bold tracking-tight text-white">DukaanBook</span>
+            <span className="text-lg font-bold tracking-tight text-white">DukaanLedger</span>
           </div>
 
           {/* Heading */}
@@ -100,7 +100,7 @@ export default function Login({ onLogin }) {
           <div className="bg-[#10b981]/10 p-1.5 rounded-md text-[#10b981]">
             <BookMarked size={20} className="stroke-[2.5]" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-gray-900">DukaanBook</span>
+          <span className="text-xl font-bold tracking-tight text-gray-900">DukaanLedger</span>
         </div>
 
         {/* Login Card */}
@@ -196,7 +196,7 @@ export default function Login({ onLogin }) {
               type="submit"
               className="w-full py-2 px-4 bg-[#10b981] hover:bg-[#059669] text-white font-bold rounded-lg transition-colors mt-1 mb-1 text-xs shadow-sm focus:ring-4 focus:ring-[#10b981]/30"
             >
-              Sign In to DukaanBook
+              Sign In to DukaanLedger
             </button>
           </form>
 
@@ -224,15 +224,13 @@ export default function Login({ onLogin }) {
             </button>
           </div>
 
-          <p className="text-center text-xs text-gray-500 font-medium">
-            Don't have an account? <a href="#" className="text-[#10b981] hover:text-[#059669] font-bold">Sign Up Free</a>
-          </p>
+
         </div>
 
         {/* Footer */}
         <div className="mt-6 w-full text-center px-4 shrink-0">
           <p className="text-xs font-medium text-[#9ca3af]">
-            © 2024 DukaanBook <span className="mx-1.5">•</span> 
+            © 2024 DukaanLedger <span className="mx-1.5">•</span> 
             <a href="#" className="hover:text-gray-700 transition-colors">Privacy Policy</a> <span className="mx-1.5">•</span> 
             <a href="#" className="hover:text-gray-700 transition-colors">Terms of Service</a>
           </p>

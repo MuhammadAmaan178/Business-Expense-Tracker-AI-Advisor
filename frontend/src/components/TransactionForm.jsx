@@ -97,16 +97,18 @@ export default function TransactionForm({ formData, setFormData, errors, onSubmi
                   <>
                     <option value="Sales">Sales</option>
                     <option value="Services">Services</option>
-                    <option value="Investment">Investment</option>
-                    <option value="Other Income">Other Income</option>
+                    <option value="Interest">Interest</option>
+                    <option value="Refunds">Refunds</option>
                   </>
                 ) : (
                   <>
                     <option value="Rent">Rent</option>
-                    <option value="Salary">Salary</option>
-                    <option value="Utilities">Utilities</option>
+                    <option value="Salaries">Salaries</option>
+                    <option value="Electricity Bill">Electricity Bill</option>
+                    <option value="Stock Purchase">Stock Purchase</option>
                     <option value="Marketing">Marketing</option>
-                    <option value="Inventory">Inventory</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Maintenance">Maintenance</option>
                   </>
                 )}
               </select>
@@ -177,7 +179,7 @@ export default function TransactionForm({ formData, setFormData, errors, onSubmi
           <div>
             <Label required>Payment Method</Label>
             <div className="relative flex gap-1 p-1 bg-gray-50 border border-gray-200 rounded-lg">
-              {['Cash', 'Bank Transfer', 'Credit Card'].map((method) => {
+              {['Cash', 'Bank Transfer', 'Credit Card', 'Check', 'EasyPaisa'].map((method) => {
                 const isSelected = formData.paymentMethod === method;
                 return (
                   <button
